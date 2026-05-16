@@ -1,900 +1,1081 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NOVI Servis – Teknik Kompor Gas & Elektronik</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;900&family=Barlow+Condensed:wght@600;700;900&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --fire-red:    #e8290b;
-      --fire-orange: #f97316;
-      --fire-yellow: #facc15;
-      --dark:        #0f0f0f;
-      --dark-2:      #1a1a1a;
-      --dark-3:      #252525;
-      --light:       #f5f0eb;
-      --muted:       #a8a09a;
-      --white:       #ffffff;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Barlow', sans-serif;
-      background: var(--dark);
-      color: var(--light);
-      overflow-x: hidden;
-    }
-
-    /* ── NOISE TEXTURE OVERLAY ── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-      opacity: .35;
-    }
-
-    /* ── HERO ── */
-    .hero {
-      position: relative;
-      min-height: 100svh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 6rem 1.5rem 4rem;
-      overflow: hidden;
-    }
-
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(249,115,22,.22) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(232,41,11,.15) 0%, transparent 60%),
-        var(--dark);
-      z-index: -1;
-    }
-
-    /* animated flame rings */
-    .hero-bg::before {
-      content: '';
-      position: absolute;
-      bottom: -120px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 700px;
-      height: 700px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(249,115,22,.08) 0%, transparent 70%);
-      animation: pulse 4s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: translateX(-50%) scale(1); opacity: .6; }
-      50%        { transform: translateX(-50%) scale(1.15); opacity: 1; }
-    }
-
-    /* flame icon */
-    .flame-icon {
-      width: 90px;
-      height: 90px;
-      margin-bottom: 1.25rem;
-      background: linear-gradient(135deg, var(--fire-orange), var(--fire-red));
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.6rem;
-      box-shadow: 0 0 40px rgba(249,115,22,.5), 0 0 80px rgba(249,115,22,.2);
-      animation: glow 3s ease-in-out infinite;
-    }
-
-    @keyframes glow {
-      0%, 100% { box-shadow: 0 0 40px rgba(249,115,22,.5), 0 0 80px rgba(249,115,22,.2); }
-      50%        { box-shadow: 0 0 60px rgba(249,115,22,.8), 0 0 120px rgba(249,115,22,.4); }
-    }
-
-    .hero-badge {
-      display: inline-block;
-      background: linear-gradient(90deg, var(--fire-red), var(--fire-orange));
-      color: var(--white);
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 700;
-      font-size: .75rem;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      padding: .35rem 1rem;
-      border-radius: 2px;
-      margin-bottom: 1rem;
-    }
-
-    .hero h1 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(3.5rem, 13vw, 8rem);
-      line-height: .95;
-      letter-spacing: .04em;
-      color: var(--white);
-      text-shadow: 0 4px 30px rgba(249,115,22,.3);
-      margin-bottom: .2rem;
-    }
-
-    .hero h1 span {
-      background: linear-gradient(90deg, var(--fire-orange), var(--fire-yellow));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-sub {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: clamp(1.1rem, 4vw, 1.6rem);
-      font-weight: 600;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 2rem;
-    }
-
-    .hero-cta-group {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-bottom: 3rem;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: .5rem;
-      padding: .85rem 2rem;
-      border-radius: 4px;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 700;
-      font-size: 1rem;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      text-decoration: none;
-      transition: transform .2s, box-shadow .2s;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn:hover { transform: translateY(-3px); }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--fire-orange), var(--fire-red));
-      color: var(--white);
-      box-shadow: 0 8px 25px rgba(232,41,11,.4);
-    }
-
-    .btn-primary:hover { box-shadow: 0 12px 35px rgba(232,41,11,.6); }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--white);
-      border: 2px solid rgba(255,255,255,.25);
-    }
-
-    .btn-outline:hover { border-color: var(--fire-orange); color: var(--fire-orange); }
-
-    /* hero stats strip */
-    .hero-stats {
-      display: flex;
-      gap: 2.5rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .stat {
-      text-align: center;
-    }
-
-    .stat-num {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2.2rem;
-      color: var(--fire-orange);
-      line-height: 1;
-    }
-
-    .stat-label {
-      font-size: .8rem;
-      color: var(--muted);
-      letter-spacing: .1em;
-      text-transform: uppercase;
-    }
-
-    /* ── DIVIDER ── */
-    .divider {
-      width: 100%;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--fire-orange), transparent);
-      opacity: .35;
-    }
-
-    /* ── SECTION COMMONS ── */
-    section { position: relative; z-index: 1; }
-
-    .section-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 5rem 1.5rem;
-    }
-
-    .section-tag {
-      display: inline-block;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: .72rem;
-      font-weight: 700;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      color: var(--fire-orange);
-      margin-bottom: .6rem;
-    }
-
-    .section-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(2.2rem, 6vw, 3.6rem);
-      letter-spacing: .04em;
-      line-height: 1;
-      margin-bottom: 1rem;
-      color: var(--white);
-    }
-
-    .section-desc {
-      color: var(--muted);
-      max-width: 540px;
-      font-size: 1rem;
-      line-height: 1.65;
-      margin-bottom: 3rem;
-    }
-
-    /* ── SERVICES GRID ── */
-    .services-bg { background: var(--dark-2); }
-
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 1.25rem;
-    }
-
-    .service-card {
-      background: var(--dark-3);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: 8px;
-      padding: 1.75rem 1.5rem;
-      transition: border-color .3s, transform .3s, box-shadow .3s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .service-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 3px;
-      height: 0;
-      background: linear-gradient(180deg, var(--fire-orange), var(--fire-red));
-      transition: height .35s ease;
-      border-radius: 0 0 2px 2px;
-    }
-
-    .service-card:hover {
-      border-color: rgba(249,115,22,.3);
-      transform: translateY(-4px);
-      box-shadow: 0 12px 30px rgba(249,115,22,.1);
-    }
-
-    .service-card:hover::before { height: 100%; }
-
-    .card-icon {
-      font-size: 2.2rem;
-      margin-bottom: 1rem;
-    }
-
-    .card-category {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: .7rem;
-      font-weight: 700;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--fire-orange);
-      margin-bottom: .4rem;
-    }
-
-    .card-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1.35rem;
-      font-weight: 900;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-      color: var(--white);
-      margin-bottom: .75rem;
-    }
-
-    .card-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: .35rem;
-    }
-
-    .card-list li {
-      font-size: .9rem;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: .5rem;
-    }
-
-    .card-list li::before {
-      content: '▸';
-      color: var(--fire-orange);
-      font-size: .75rem;
-      flex-shrink: 0;
-    }
-
-    /* ── BRANDS ── */
-    .brands-section { background: var(--dark); }
-
-    .brands-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .75rem;
-      align-items: center;
-    }
-
-    .brand-tag {
-      background: var(--dark-3);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 4px;
-      padding: .55rem 1.1rem;
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 700;
-      font-size: .95rem;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      transition: color .2s, border-color .2s;
-    }
-
-    .brand-tag:hover { color: var(--white); border-color: rgba(249,115,22,.4); }
-
-    /* ── WHY US ── */
-    .why-bg { background: var(--dark-2); }
-
-    .why-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1rem;
-    }
-
-    .why-card {
-      text-align: center;
-      padding: 2rem 1rem;
-      background: var(--dark-3);
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,.06);
-    }
-
-    .why-icon {
-      font-size: 2.5rem;
-      margin-bottom: .75rem;
-    }
-
-    .why-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 900;
-      font-size: 1.1rem;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-      color: var(--white);
-      margin-bottom: .4rem;
-    }
-
-    .why-desc {
-      font-size: .88rem;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    /* ── CONTACT ── */
-    .contact-bg { background: var(--dark); }
-
-    .contact-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-      align-items: center;
-    }
-
-    @media (max-width: 680px) {
-      .contact-grid { grid-template-columns: 1fr; }
-    }
-
-    .contact-info {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-
-    .contact-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-    }
-
-    .contact-ico {
-      width: 46px;
-      height: 46px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, var(--fire-orange), var(--fire-red));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-      flex-shrink: 0;
-    }
-
-    .contact-label {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: .72rem;
-      font-weight: 700;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--fire-orange);
-      margin-bottom: .2rem;
-    }
-
-    .contact-value {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--white);
-    }
-
-    .contact-value a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .contact-value a:hover { color: var(--fire-orange); }
-
-    /* WA CTA box */
-    .wa-box {
-      background: linear-gradient(135deg, rgba(249,115,22,.15), rgba(232,41,11,.1));
-      border: 1px solid rgba(249,115,22,.3);
-      border-radius: 12px;
-      padding: 2.5rem 2rem;
-      text-align: center;
-    }
-
-    .wa-box h3 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2rem;
-      letter-spacing: .06em;
-      margin-bottom: .5rem;
-    }
-
-    .wa-box p {
-      color: var(--muted);
-      font-size: .95rem;
-      margin-bottom: 1.5rem;
-      line-height: 1.55;
-    }
-
-    .wa-number {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2.4rem;
-      color: var(--fire-yellow);
-      letter-spacing: .1em;
-      display: block;
-      margin-bottom: 1.5rem;
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      background: #080808;
-      border-top: 1px solid rgba(255,255,255,.06);
-      padding: 2.5rem 1.5rem;
-      text-align: center;
-    }
-
-    .footer-brand {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.8rem;
-      letter-spacing: .12em;
-      color: var(--fire-orange);
-      margin-bottom: .4rem;
-    }
-
-    .footer-copy {
-      font-size: .82rem;
-      color: var(--muted);
-    }
-
-    /* ── NAV ── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 1.5rem;
-      background: rgba(15,15,15,.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255,255,255,.06);
-    }
-
-    .nav-logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.5rem;
-      letter-spacing: .14em;
-      color: var(--fire-orange);
-      text-decoration: none;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 700;
-      font-size: .85rem;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color .2s;
-    }
-
-    .nav-links a:hover { color: var(--fire-orange); }
-
-    @media (max-width: 600px) {
-      .nav-links { display: none; }
-    }
-
-    /* ── FLOATING WA BUTTON ── */
-    .wa-float {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      z-index: 200;
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      background: #25d366;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      box-shadow: 0 6px 24px rgba(37,211,102,.5);
-      font-size: 1.7rem;
-      animation: bounce 2.5s ease-in-out infinite;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50%       { transform: translateY(-8px); }
-    }
-
-    /* ── SCROLL REVEAL ── */
-    .reveal {
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity .65s ease, transform .65s ease;
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  </style>
-</head>
-<body>
-
-  <!-- NAV -->
-  <nav>
-    <a class="nav-logo" href="#">🔥 NOVI</a>
-    <ul class="nav-links">
-      <li><a href="#layanan">Layanan</a></li>
-      <li><a href="#kenapa">Kenapa Kami</a></li>
-      <li><a href="#kontak">Kontak</a></li>
-    </ul>
-    <a class="btn btn-primary" href="https://wa.me/6281997901492" target="_blank" style="padding:.55rem 1.2rem;font-size:.85rem;">
-      📲 WhatsApp
-    </a>
-  </nav>
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-badge">✦ Servis Panggilan Siap Di Tempat Anda ✦</div>
-    <div class="flame-icon">🔥</div>
-    <h1><span>NOVI</span><br>SERVIS</h1>
-    <p class="hero-sub">Teknik Kompor Gas &amp; Elektronik</p>
-    <div class="hero-cta-group">
-      <a class="btn btn-primary" href="https://wa.me/6281997901492" target="_blank">📲 Hubungi Sekarang</a>
-      <a class="btn btn-outline" href="#layanan">Lihat Layanan ↓</a>
-    </div>
-    <div class="hero-stats">
-      <div class="stat"><div class="stat-num">🛡️</div><div class="stat-label">Bergaransi</div></div>
-      <div class="stat"><div class="stat-num">⚡</div><div class="stat-label">Respon Cepat</div></div>
-      <div class="stat"><div class="stat-num">🏠</div><div class="stat-label">Servis Di Tempat</div></div>
-    </div>
-  </section>
-
-  <div class="divider"></div>
-
-  <!-- SERVICES -->
-  <section id="layanan" class="services-bg">
-    <div class="section-inner">
-      <span class="section-tag reveal">✦ Apa Yang Kami Servis</span>
-      <h2 class="section-title reveal">Layanan<br>Kami</h2>
-      <p class="section-desc reveal">Menerima service panggilan DI TEMPAT ANDA. Siap kami akan Segera respon CEPAT. Terima kasih sudah mempercayakan perangkat Anda kepada kami. 🙏🏻🧑‍🔧</p>
-
-      <div class="services-grid">
-
-        <div class="service-card reveal">
-          <div class="card-icon">🔥</div>
-          <div class="card-category">Kompor Gas</div>
-          <div class="card-title">Kompor Gas</div>
-          <ul class="card-list">
-            <li>Kompor Biasa / Tanem</li>
-            <li>Rinnai</li>
-            <li>Quantum</li>
-            <li>Miyako</li>
-            <li>Dan merk lainnya</li>
-          </ul>
-        </div>
-
-        <div class="service-card reveal">
-          <div class="card-icon">🫧</div>
-          <div class="card-category">Elektronik</div>
-          <div class="card-title">Mesin Cuci</div>
-          <ul class="card-list">
-            <li>Mesin Cuci Manual</li>
-            <li>Mesin Cuci Otomatis</li>
-            <li>Semua merk</li>
-          </ul>
-        </div>
-
-        <div class="service-card reveal">
-          <div class="card-icon">🍚</div>
-          <div class="card-category">Elektronik</div>
-          <div class="card-title">Magic Com</div>
-          <ul class="card-list">
-            <li>Rice Cooker</li>
-            <li>Magic Jar</li>
-            <li>Semua ukuran & merk</li>
-          </ul>
-        </div>
-
-        <div class="service-card reveal">
-          <div class="card-icon">🥤</div>
-          <div class="card-category">Elektronik</div>
-          <div class="card-title">Blender & Mixer</div>
-          <ul class="card-list">
-            <li>Blender Rumah Tangga</li>
-            <li>Mixer Dapur</li>
-            <li>Semua merk</li>
-          </ul>
-        </div>
-
-        <div class="service-card reveal">
-          <div class="card-icon">💨</div>
-          <div class="card-category">Elektronik</div>
-          <div class="card-title">Kipas Angin</div>
-          <ul class="card-list">
-            <li>Kipas Duduk</li>
-            <li>Kipas Berdiri</li>
-            <li>Kipas Dinding</li>
-          </ul>
-        </div>
-
-        <div class="service-card reveal">
-          <div class="card-icon">💧</div>
-          <div class="card-category">Elektronik</div>
-          <div class="card-title">Dispenser</div>
-          <ul class="card-list">
-            <li>Dispenser Galon</li>
-            <li>Dispenser Air Panas/Dingin</li>
-            <li>Semua merk</li>
-          </ul>
-        </div>
-
-        <div class="service-card reveal">
-          <div class="card-icon">❄️</div>
-          <div class="card-category">Pendingin</div>
-          <div class="card-title">Kulkas</div>
-          <ul class="card-list">
-            <li>Kulkas 1 & 2 Pintu</li>
-            <li>Semua kapasitas</li>
-            <li>Semua merk</li>
-          </ul>
-        </div>
-
-        <div class="service-card reveal">
-          <div class="card-icon">🌬️</div>
-          <div class="card-category">Pendingin</div>
-          <div class="card-title">AC</div>
-          <ul class="card-list">
-            <li>Service AC</li>
-            <li>Cuci AC</li>
-            <li>Semua merk & kapasitas</li>
-          </ul>
-        </div>
-
-        <div class="service-card reveal" style="grid-column: span 1;">
-          <div class="card-icon">🚿</div>
-          <div class="card-category">Pemanas Air</div>
-          <div class="card-title">Water Heater</div>
-          <ul class="card-list">
-            <li>Pemanas Air Mandi</li>
-            <li>Water Heater Gas & Listrik</li>
-            <li>Semua merk 😍</li>
-          </ul>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <div class="divider"></div>
-
-  <!-- BRANDS -->
-  <section class="brands-section">
-    <div class="section-inner" style="padding-top:3.5rem;padding-bottom:3.5rem;">
-      <span class="section-tag reveal">✦ Merk Yang Kami Tangani</span>
-      <h2 class="section-title reveal">Merk Langganan</h2>
-      <div class="brands-row reveal">
-        <span class="brand-tag">Rinnai</span>
-        <span class="brand-tag">Quantum</span>
-        <span class="brand-tag">Miyako</span>
-        <span class="brand-tag">Sharp</span>
-        <span class="brand-tag">Panasonic</span>
-        <span class="brand-tag">Samsung</span>
-        <span class="brand-tag">LG</span>
-        <span class="brand-tag">Polytron</span>
-        <span class="brand-tag">Sanken</span>
-        <span class="brand-tag">Philips</span>
-        <span class="brand-tag">Electrolux</span>
-        <span class="brand-tag">& Lainnya</span>
-      </div>
-    </div>
-  </section>
-
-  <div class="divider"></div>
-
-  <!-- WHY US -->
-  <section id="kenapa" class="why-bg">
-    <div class="section-inner">
-      <span class="section-tag reveal">✦ Kenapa Pilih Kami</span>
-      <h2 class="section-title reveal">Keunggulan<br>Kami</h2>
-      <div class="why-grid">
-        <div class="why-card reveal">
-          <div class="why-icon">⚡</div>
-          <div class="why-title">Respon Cepat</div>
-          <p class="why-desc">Hubungi kami dan kami segera merespons dengan cepat untuk menangani masalah Anda.</p>
-        </div>
-        <div class="why-card reveal">
-          <div class="why-icon">🏠</div>
-          <div class="why-title">Service Di Tempat</div>
-          <p class="why-desc">Kami datang langsung ke rumah Anda. Tidak perlu repot membawa perangkat ke bengkel.</p>
-        </div>
-        <div class="why-card reveal">
-          <div class="why-icon">🛡️</div>
-          <div class="why-title">Bergaransi</div>
-          <p class="why-desc">Setiap pekerjaan servis kami berikan garansi untuk ketenangan pikiran Anda.</p>
-        </div>
-        <div class="why-card reveal">
-          <div class="why-icon">🔧</div>
-          <div class="why-title">Teknisi Berpengalaman</div>
-          <p class="why-desc">Dikerjakan oleh teknisi berpengalaman dan terlatih di bidang elektronik & kompor gas.</p>
-        </div>
-        <div class="why-card reveal">
-          <div class="why-icon">🚐</div>
-          <div class="why-title">Siap Antar Jemput</div>
-          <p class="why-desc">Layanan antar jemput perangkat tersedia. Hubungi kami untuk informasi lebih lanjut.</p>
-        </div>
-        <div class="why-card reveal">
-          <div class="why-icon">💰</div>
-          <div class="why-title">Harga Terjangkau</div>
-          <p class="why-desc">Biaya servis yang jujur dan transparan, sesuai dengan kualitas pengerjaan terbaik.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="divider"></div>
-
-  <!-- CONTACT -->
-  <section id="kontak" class="contact-bg">
-    <div class="section-inner">
-      <span class="section-tag reveal">✦ Hubungi Kami</span>
-      <h2 class="section-title reveal">Kontak &<br>Lokasi</h2>
-      <div class="contact-grid">
-
-        <div class="contact-info reveal">
-          <div class="contact-item">
-            <div class="contact-ico">📱</div>
-            <div>
-              <div class="contact-label">WhatsApp / Telepon</div>
-              <div class="contact-value"><a href="tel:+6281997901492">081 997 901 492</a></div>
-            </div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-ico">📘</div>
-            <div>
-              <div class="contact-label">Facebook</div>
-              <div class="contact-value"><a href="https://facebook.com/NoviyanHadi" target="_blank">Noviyan Hadi</a></div>
-            </div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-ico">📍</div>
-            <div>
-              <div class="contact-label">Alamat</div>
-              <div class="contact-value">Desa Tengeh, Bendungan Sepit</div>
-            </div>
-          </div>
-          <div class="contact-item">
-            <div class="contact-ico">🕐</div>
-            <div>
-              <div class="contact-label">Jam Operasional</div>
-              <div class="contact-value">Setiap Hari • Siap Melayani</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="wa-box reveal">
-          <h3>Butuh Servis Sekarang?</h3>
-          <p>Hubungi kami lewat WhatsApp untuk konsultasi gratis dan penanganan segera di tempat Anda! 🙏🏻</p>
-          <span class="wa-number">081 997 901 492</span>
-          <a class="btn btn-primary" style="width:100%;justify-content:center;font-size:1.05rem;" href="https://wa.me/6281997901492?text=Halo%20Novi%20Servis%2C%20saya%20ingin%20servis%20perangkat%20saya." target="_blank">
-            💬 Chat WhatsApp Sekarang
-          </a>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-brand">🔥 NOVI SERVIS</div>
-    <p class="footer-copy">Teknik Kompor Gas &amp; Elektronik • Desa Tengeh, Bendungan Sepit<br>
-    Siap Antar Jemput • Service Di Tempat • Bergaransi</p>
-  </footer>
-
-  <!-- Floating WhatsApp -->
-  <a class="wa-float" href="https://wa.me/6281997901492" target="_blank" title="Chat WhatsApp">
-    📲
-  </a>
-
-  <!-- SCROLL REVEAL JS -->
-  <script>
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((e, i) => {
-        if (e.isIntersecting) {
-          setTimeout(() => e.target.classList.add('visible'), i * 60);
-          observer.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.12 });
-    reveals.forEach(el => observer.observe(el));
-  </script>
-</body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>NOVI Servis – Teknik Kompor Gas & Elektronik</title>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;900&family=Barlow+Condensed:wght@600;700;900&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			:root {
+				--fire-red: #e8290b;
+				--fire-orange: #f97316;
+				--fire-yellow: #facc15;
+				--dark: #0f0f0f;
+				--dark-2: #1a1a1a;
+				--dark-3: #252525;
+				--light: #f5f0eb;
+				--muted: #a8a09a;
+				--white: #ffffff;
+			}
+
+			*,
+			*::before,
+			*::after {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+
+			html {
+				scroll-behavior: smooth;
+			}
+
+			body {
+				font-family: 'Barlow', sans-serif;
+				background: var(--dark);
+				color: var(--light);
+				overflow-x: hidden;
+			}
+
+			/* ── NOISE TEXTURE OVERLAY ── */
+			body::before {
+				content: '';
+				position: fixed;
+				inset: 0;
+				background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+				pointer-events: none;
+				z-index: 0;
+				opacity: 0.35;
+			}
+
+			/* ── HERO ── */
+			.hero {
+				position: relative;
+				min-height: 100svh;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				text-align: center;
+				padding: 6rem 1.5rem 4rem;
+				overflow: hidden;
+			}
+
+			.hero-bg {
+				position: absolute;
+				inset: 0;
+				background:
+					radial-gradient(
+						ellipse 80% 60% at 50% 0%,
+						rgba(249, 115, 22, 0.22) 0%,
+						transparent 70%
+					),
+					radial-gradient(
+						ellipse 50% 40% at 80% 80%,
+						rgba(232, 41, 11, 0.15) 0%,
+						transparent 60%
+					),
+					var(--dark);
+				z-index: -1;
+			}
+
+			/* animated flame rings */
+			.hero-bg::before {
+				content: '';
+				position: absolute;
+				bottom: -120px;
+				left: 50%;
+				transform: translateX(-50%);
+				width: 700px;
+				height: 700px;
+				border-radius: 50%;
+				background: radial-gradient(
+					circle,
+					rgba(249, 115, 22, 0.08) 0%,
+					transparent 70%
+				);
+				animation: pulse 4s ease-in-out infinite;
+			}
+
+			@keyframes pulse {
+				0%,
+				100% {
+					transform: translateX(-50%) scale(1);
+					opacity: 0.6;
+				}
+				50% {
+					transform: translateX(-50%) scale(1.15);
+					opacity: 1;
+				}
+			}
+
+			/* flame icon */
+			.flame-icon {
+				width: 90px;
+				height: 90px;
+				margin-bottom: 1.25rem;
+				background: linear-gradient(
+					135deg,
+					var(--fire-orange),
+					var(--fire-red)
+				);
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 2.6rem;
+				box-shadow:
+					0 0 40px rgba(249, 115, 22, 0.5),
+					0 0 80px rgba(249, 115, 22, 0.2);
+				animation: glow 3s ease-in-out infinite;
+			}
+
+			@keyframes glow {
+				0%,
+				100% {
+					box-shadow:
+						0 0 40px rgba(249, 115, 22, 0.5),
+						0 0 80px rgba(249, 115, 22, 0.2);
+				}
+				50% {
+					box-shadow:
+						0 0 60px rgba(249, 115, 22, 0.8),
+						0 0 120px rgba(249, 115, 22, 0.4);
+				}
+			}
+
+			.hero-badge {
+				display: inline-block;
+				background: linear-gradient(90deg, var(--fire-red), var(--fire-orange));
+				color: var(--white);
+				font-family: 'Barlow Condensed', sans-serif;
+				font-weight: 700;
+				font-size: 0.75rem;
+				letter-spacing: 0.18em;
+				text-transform: uppercase;
+				padding: 0.35rem 1rem;
+				border-radius: 2px;
+				margin-bottom: 1rem;
+			}
+
+			.hero h1 {
+				font-family: 'Bebas Neue', sans-serif;
+				font-size: clamp(3.5rem, 13vw, 8rem);
+				line-height: 0.95;
+				letter-spacing: 0.04em;
+				color: var(--white);
+				text-shadow: 0 4px 30px rgba(249, 115, 22, 0.3);
+				margin-bottom: 0.2rem;
+			}
+
+			.hero h1 span {
+				background: linear-gradient(
+					90deg,
+					var(--fire-orange),
+					var(--fire-yellow)
+				);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+			}
+
+			.hero-sub {
+				font-family: 'Barlow Condensed', sans-serif;
+				font-size: clamp(1.1rem, 4vw, 1.6rem);
+				font-weight: 600;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--muted);
+				margin-bottom: 2rem;
+			}
+
+			.hero-cta-group {
+				display: flex;
+				gap: 1rem;
+				flex-wrap: wrap;
+				justify-content: center;
+				margin-bottom: 3rem;
+			}
+
+			.btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				padding: 0.85rem 2rem;
+				border-radius: 4px;
+				font-family: 'Barlow Condensed', sans-serif;
+				font-weight: 700;
+				font-size: 1rem;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				text-decoration: none;
+				transition:
+					transform 0.2s,
+					box-shadow 0.2s;
+				border: none;
+				cursor: pointer;
+			}
+
+			.btn:hover {
+				transform: translateY(-3px);
+			}
+
+			.btn-primary {
+				background: linear-gradient(
+					135deg,
+					var(--fire-orange),
+					var(--fire-red)
+				);
+				color: var(--white);
+				box-shadow: 0 8px 25px rgba(232, 41, 11, 0.4);
+			}
+
+			.btn-primary:hover {
+				box-shadow: 0 12px 35px rgba(232, 41, 11, 0.6);
+			}
+
+			.btn-outline {
+				background: transparent;
+				color: var(--white);
+				border: 2px solid rgba(255, 255, 255, 0.25);
+			}
+
+			.btn-outline:hover {
+				border-color: var(--fire-orange);
+				color: var(--fire-orange);
+			}
+
+			/* hero stats strip */
+			.hero-stats {
+				display: flex;
+				gap: 2.5rem;
+				flex-wrap: wrap;
+				justify-content: center;
+			}
+
+			.stat {
+				text-align: center;
+			}
+
+			.stat-num {
+				font-family: 'Bebas Neue', sans-serif;
+				font-size: 2.2rem;
+				color: var(--fire-orange);
+				line-height: 1;
+			}
+
+			.stat-label {
+				font-size: 0.8rem;
+				color: var(--muted);
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+			}
+
+			/* ── DIVIDER ── */
+			.divider {
+				width: 100%;
+				height: 2px;
+				background: linear-gradient(
+					90deg,
+					transparent,
+					var(--fire-orange),
+					transparent
+				);
+				opacity: 0.35;
+			}
+
+			/* ── SECTION COMMONS ── */
+			section {
+				position: relative;
+				z-index: 1;
+			}
+
+			.section-inner {
+				max-width: 1100px;
+				margin: 0 auto;
+				padding: 5rem 1.5rem;
+			}
+
+			.section-tag {
+				display: inline-block;
+				font-family: 'Barlow Condensed', sans-serif;
+				font-size: 0.72rem;
+				font-weight: 700;
+				letter-spacing: 0.22em;
+				text-transform: uppercase;
+				color: var(--fire-orange);
+				margin-bottom: 0.6rem;
+			}
+
+			.section-title {
+				font-family: 'Bebas Neue', sans-serif;
+				font-size: clamp(2.2rem, 6vw, 3.6rem);
+				letter-spacing: 0.04em;
+				line-height: 1;
+				margin-bottom: 1rem;
+				color: var(--white);
+			}
+
+			.section-desc {
+				color: var(--muted);
+				max-width: 540px;
+				font-size: 1rem;
+				line-height: 1.65;
+				margin-bottom: 3rem;
+			}
+
+			/* ── SERVICES GRID ── */
+			.services-bg {
+				background: var(--dark-2);
+			}
+
+			.services-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+				gap: 1.25rem;
+			}
+
+			.service-card {
+				background: var(--dark-3);
+				border: 1px solid rgba(255, 255, 255, 0.06);
+				border-radius: 8px;
+				padding: 1.75rem 1.5rem;
+				transition:
+					border-color 0.3s,
+					transform 0.3s,
+					box-shadow 0.3s;
+				position: relative;
+				overflow: hidden;
+			}
+
+			.service-card::before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 3px;
+				height: 0;
+				background: linear-gradient(
+					180deg,
+					var(--fire-orange),
+					var(--fire-red)
+				);
+				transition: height 0.35s ease;
+				border-radius: 0 0 2px 2px;
+			}
+
+			.service-card:hover {
+				border-color: rgba(249, 115, 22, 0.3);
+				transform: translateY(-4px);
+				box-shadow: 0 12px 30px rgba(249, 115, 22, 0.1);
+			}
+
+			.service-card:hover::before {
+				height: 100%;
+			}
+
+			.card-icon {
+				font-size: 2.2rem;
+				margin-bottom: 1rem;
+			}
+
+			.card-category {
+				font-family: 'Barlow Condensed', sans-serif;
+				font-size: 0.7rem;
+				font-weight: 700;
+				letter-spacing: 0.18em;
+				text-transform: uppercase;
+				color: var(--fire-orange);
+				margin-bottom: 0.4rem;
+			}
+
+			.card-title {
+				font-family: 'Barlow Condensed', sans-serif;
+				font-size: 1.35rem;
+				font-weight: 900;
+				letter-spacing: 0.04em;
+				text-transform: uppercase;
+				color: var(--white);
+				margin-bottom: 0.75rem;
+			}
+
+			.card-list {
+				list-style: none;
+				display: flex;
+				flex-direction: column;
+				gap: 0.35rem;
+			}
+
+			.card-list li {
+				font-size: 0.9rem;
+				color: var(--muted);
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.card-list li::before {
+				content: '▸';
+				color: var(--fire-orange);
+				font-size: 0.75rem;
+				flex-shrink: 0;
+			}
+
+			/* ── BRANDS ── */
+			.brands-section {
+				background: var(--dark);
+			}
+
+			.brands-row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.75rem;
+				align-items: center;
+			}
+
+			.brand-tag {
+				background: var(--dark-3);
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				border-radius: 4px;
+				padding: 0.55rem 1.1rem;
+				font-family: 'Barlow Condensed', sans-serif;
+				font-weight: 700;
+				font-size: 0.95rem;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				color: var(--muted);
+				transition:
+					color 0.2s,
+					border-color 0.2s;
+			}
+
+			.brand-tag:hover {
+				color: var(--white);
+				border-color: rgba(249, 115, 22, 0.4);
+			}
+
+			/* ── WHY US ── */
+			.why-bg {
+				background: var(--dark-2);
+			}
+
+			.why-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+				gap: 1.5rem;
+				margin-top: 1rem;
+			}
+
+			.why-card {
+				text-align: center;
+				padding: 2rem 1rem;
+				background: var(--dark-3);
+				border-radius: 8px;
+				border: 1px solid rgba(255, 255, 255, 0.06);
+			}
+
+			.why-icon {
+				font-size: 2.5rem;
+				margin-bottom: 0.75rem;
+			}
+
+			.why-title {
+				font-family: 'Barlow Condensed', sans-serif;
+				font-weight: 900;
+				font-size: 1.1rem;
+				letter-spacing: 0.04em;
+				text-transform: uppercase;
+				color: var(--white);
+				margin-bottom: 0.4rem;
+			}
+
+			.why-desc {
+				font-size: 0.88rem;
+				color: var(--muted);
+				line-height: 1.5;
+			}
+
+			/* ── CONTACT ── */
+			.contact-bg {
+				background: var(--dark);
+			}
+
+			.contact-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 3rem;
+				align-items: center;
+			}
+
+			@media (max-width: 680px) {
+				.contact-grid {
+					grid-template-columns: 1fr;
+				}
+			}
+
+			.contact-info {
+				display: flex;
+				flex-direction: column;
+				gap: 1.25rem;
+			}
+
+			.contact-item {
+				display: flex;
+				align-items: flex-start;
+				gap: 1rem;
+			}
+
+			.contact-ico {
+				width: 46px;
+				height: 46px;
+				border-radius: 8px;
+				background: linear-gradient(
+					135deg,
+					var(--fire-orange),
+					var(--fire-red)
+				);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 1.3rem;
+				flex-shrink: 0;
+			}
+
+			.contact-label {
+				font-family: 'Barlow Condensed', sans-serif;
+				font-size: 0.72rem;
+				font-weight: 700;
+				letter-spacing: 0.18em;
+				text-transform: uppercase;
+				color: var(--fire-orange);
+				margin-bottom: 0.2rem;
+			}
+
+			.contact-value {
+				font-size: 1rem;
+				font-weight: 600;
+				color: var(--white);
+			}
+
+			.contact-value a {
+				color: inherit;
+				text-decoration: none;
+			}
+
+			.contact-value a:hover {
+				color: var(--fire-orange);
+			}
+
+			/* WA CTA box */
+			.wa-box {
+				background: linear-gradient(
+					135deg,
+					rgba(249, 115, 22, 0.15),
+					rgba(232, 41, 11, 0.1)
+				);
+				border: 1px solid rgba(249, 115, 22, 0.3);
+				border-radius: 12px;
+				padding: 2.5rem 2rem;
+				text-align: center;
+			}
+
+			.wa-box h3 {
+				font-family: 'Bebas Neue', sans-serif;
+				font-size: 2rem;
+				letter-spacing: 0.06em;
+				margin-bottom: 0.5rem;
+			}
+
+			.wa-box p {
+				color: var(--muted);
+				font-size: 0.95rem;
+				margin-bottom: 1.5rem;
+				line-height: 1.55;
+			}
+
+			.wa-number {
+				font-family: 'Bebas Neue', sans-serif;
+				font-size: 2.4rem;
+				color: var(--fire-yellow);
+				letter-spacing: 0.1em;
+				display: block;
+				margin-bottom: 1.5rem;
+			}
+
+			/* ── FOOTER ── */
+			footer {
+				background: #080808;
+				border-top: 1px solid rgba(255, 255, 255, 0.06);
+				padding: 2.5rem 1.5rem;
+				text-align: center;
+			}
+
+			.footer-brand {
+				font-family: 'Bebas Neue', sans-serif;
+				font-size: 1.8rem;
+				letter-spacing: 0.12em;
+				color: var(--fire-orange);
+				margin-bottom: 0.4rem;
+			}
+
+			.footer-copy {
+				font-size: 0.82rem;
+				color: var(--muted);
+			}
+
+			/* ── NAV ── */
+			nav {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				z-index: 100;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 1rem 1.5rem;
+				background: rgba(15, 15, 15, 0.85);
+				backdrop-filter: blur(12px);
+				border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+			}
+
+			.nav-logo {
+				font-family: 'Bebas Neue', sans-serif;
+				font-size: 1.5rem;
+				letter-spacing: 0.14em;
+				color: var(--fire-orange);
+				text-decoration: none;
+			}
+
+			.nav-links {
+				display: flex;
+				gap: 2rem;
+				list-style: none;
+			}
+
+			.nav-links a {
+				font-family: 'Barlow Condensed', sans-serif;
+				font-weight: 700;
+				font-size: 0.85rem;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--muted);
+				text-decoration: none;
+				transition: color 0.2s;
+			}
+
+			.nav-links a:hover {
+				color: var(--fire-orange);
+			}
+
+			@media (max-width: 600px) {
+				.nav-links {
+					display: none;
+				}
+			}
+
+			/* ── FLOATING WA BUTTON ── */
+			.wa-float {
+				position: fixed;
+				bottom: 1.5rem;
+				right: 1.5rem;
+				z-index: 200;
+				width: 58px;
+				height: 58px;
+				border-radius: 50%;
+				background: #25d366;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				text-decoration: none;
+				box-shadow: 0 6px 24px rgba(37, 211, 102, 0.5);
+				font-size: 1.7rem;
+				animation: bounce 2.5s ease-in-out infinite;
+			}
+
+			@keyframes bounce {
+				0%,
+				100% {
+					transform: translateY(0);
+				}
+				50% {
+					transform: translateY(-8px);
+				}
+			}
+
+			/* ── SCROLL REVEAL ── */
+			.reveal {
+				opacity: 0;
+				transform: translateY(28px);
+				transition:
+					opacity 0.65s ease,
+					transform 0.65s ease;
+			}
+
+			.reveal.visible {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		</style>
+	</head>
+	<body>
+		<!-- NAV -->
+		<nav>
+			<a class="nav-logo" href="#">🔥 NOVI</a>
+			<ul class="nav-links">
+				<li><a href="#layanan">Layanan</a></li>
+				<li><a href="#kenapa">Kenapa Kami</a></li>
+				<li><a href="#kontak">Kontak</a></li>
+			</ul>
+			<a
+				class="btn btn-primary"
+				href="https://wa.me/6281997901492"
+				target="_blank"
+				style="padding: 0.55rem 1.2rem; font-size: 0.85rem"
+			>
+				📲 WhatsApp
+			</a>
+		</nav>
+
+		<!-- HERO -->
+		<section class="hero">
+			<div class="hero-bg"></div>
+			<div class="hero-badge">✦ Servis Panggilan Siap Di Tempat Anda ✦</div>
+			<div class="flame-icon">🔥</div>
+			<h1><span>NOVIAAA</span><br />SERVIS</h1>
+			<p class="hero-sub">Teknik Kompor Gas &amp; Elektronik</p>
+			<div class="hero-cta-group">
+				<a
+					class="btn btn-primary"
+					href="https://wa.me/6281997901492"
+					target="_blank"
+					>📲 Hubungi Sekarang</a
+				>
+				<a class="btn btn-outline" href="#layanan">Lihat Layanan ↓</a>
+			</div>
+			<div class="hero-stats">
+				<div class="stat">
+					<div class="stat-num">🛡️</div>
+					<div class="stat-label">Bergaransi</div>
+				</div>
+				<div class="stat">
+					<div class="stat-num">⚡</div>
+					<div class="stat-label">Respon Cepat</div>
+				</div>
+				<div class="stat">
+					<div class="stat-num">🏠</div>
+					<div class="stat-label">Servis Di Tempat</div>
+				</div>
+			</div>
+		</section>
+
+		<div class="divider"></div>
+
+		<!-- SERVICES -->
+		<section id="layanan" class="services-bg">
+			<div class="section-inner">
+				<span class="section-tag reveal">✦ Apa Yang Kami Servis</span>
+				<h2 class="section-title reveal">Layanan<br />Kami</h2>
+				<p class="section-desc reveal">
+					Menerima service panggilan DI TEMPAT ANDA. Siap kami akan Segera
+					respon CEPAT. Terima kasih sudah mempercayakan perangkat Anda kepada
+					kami. 🙏🏻🧑‍🔧
+				</p>
+
+				<div class="services-grid">
+					<div class="service-card reveal">
+						<div class="card-icon">🔥</div>
+						<div class="card-category">Kompor Gas</div>
+						<div class="card-title">Kompor Gas</div>
+						<ul class="card-list">
+							<li>Kompor Biasa / Tanem</li>
+							<li>Rinnai</li>
+							<li>Quantum</li>
+							<li>Miyako</li>
+							<li>Dan merk lainnya</li>
+						</ul>
+					</div>
+
+					<div class="service-card reveal">
+						<div class="card-icon">🫧</div>
+						<div class="card-category">Elektronik</div>
+						<div class="card-title">Mesin Cuci</div>
+						<ul class="card-list">
+							<li>Mesin Cuci Manual</li>
+							<li>Mesin Cuci Otomatis</li>
+							<li>Semua merk</li>
+						</ul>
+					</div>
+
+					<div class="service-card reveal">
+						<div class="card-icon">🍚</div>
+						<div class="card-category">Elektronik</div>
+						<div class="card-title">Magic Com</div>
+						<ul class="card-list">
+							<li>Rice Cooker</li>
+							<li>Magic Jar</li>
+							<li>Semua ukuran & merk</li>
+						</ul>
+					</div>
+
+					<div class="service-card reveal">
+						<div class="card-icon">🥤</div>
+						<div class="card-category">Elektronik</div>
+						<div class="card-title">Blender & Mixer</div>
+						<ul class="card-list">
+							<li>Blender Rumah Tangga</li>
+							<li>Mixer Dapur</li>
+							<li>Semua merk</li>
+						</ul>
+					</div>
+
+					<div class="service-card reveal">
+						<div class="card-icon">💨</div>
+						<div class="card-category">Elektronik</div>
+						<div class="card-title">Kipas Angin</div>
+						<ul class="card-list">
+							<li>Kipas Duduk</li>
+							<li>Kipas Berdiri</li>
+							<li>Kipas Dinding</li>
+						</ul>
+					</div>
+
+					<div class="service-card reveal">
+						<div class="card-icon">💧</div>
+						<div class="card-category">Elektronik</div>
+						<div class="card-title">Dispenser</div>
+						<ul class="card-list">
+							<li>Dispenser Galon</li>
+							<li>Dispenser Air Panas/Dingin</li>
+							<li>Semua merk</li>
+						</ul>
+					</div>
+
+					<div class="service-card reveal">
+						<div class="card-icon">❄️</div>
+						<div class="card-category">Pendingin</div>
+						<div class="card-title">Kulkas</div>
+						<ul class="card-list">
+							<li>Kulkas 1 & 2 Pintu</li>
+							<li>Semua kapasitas</li>
+							<li>Semua merk</li>
+						</ul>
+					</div>
+
+					<div class="service-card reveal">
+						<div class="card-icon">🌬️</div>
+						<div class="card-category">Pendingin</div>
+						<div class="card-title">AC</div>
+						<ul class="card-list">
+							<li>Service AC</li>
+							<li>Cuci AC</li>
+							<li>Semua merk & kapasitas</li>
+						</ul>
+					</div>
+
+					<div class="service-card reveal" style="grid-column: span 1">
+						<div class="card-icon">🚿</div>
+						<div class="card-category">Pemanas Air</div>
+						<div class="card-title">Water Heater</div>
+						<ul class="card-list">
+							<li>Pemanas Air Mandi</li>
+							<li>Water Heater Gas & Listrik</li>
+							<li>Semua merk 😍</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<div class="divider"></div>
+
+		<!-- BRANDS -->
+		<section class="brands-section">
+			<div
+				class="section-inner"
+				style="padding-top: 3.5rem; padding-bottom: 3.5rem"
+			>
+				<span class="section-tag reveal">✦ Merk Yang Kami Tangani</span>
+				<h2 class="section-title reveal">Merk Langganan</h2>
+				<div class="brands-row reveal">
+					<span class="brand-tag">Rinnai</span>
+					<span class="brand-tag">Quantum</span>
+					<span class="brand-tag">Miyako</span>
+					<span class="brand-tag">Sharp</span>
+					<span class="brand-tag">Panasonic</span>
+					<span class="brand-tag">Samsung</span>
+					<span class="brand-tag">LG</span>
+					<span class="brand-tag">Polytron</span>
+					<span class="brand-tag">Sanken</span>
+					<span class="brand-tag">Philips</span>
+					<span class="brand-tag">Electrolux</span>
+					<span class="brand-tag">& Lainnya</span>
+				</div>
+			</div>
+		</section>
+
+		<div class="divider"></div>
+
+		<!-- WHY US -->
+		<section id="kenapa" class="why-bg">
+			<div class="section-inner">
+				<span class="section-tag reveal">✦ Kenapa Pilih Kami</span>
+				<h2 class="section-title reveal">Keunggulan<br />Kami</h2>
+				<div class="why-grid">
+					<div class="why-card reveal">
+						<div class="why-icon">⚡</div>
+						<div class="why-title">Respon Cepat</div>
+						<p class="why-desc">
+							Hubungi kami dan kami segera merespons dengan cepat untuk
+							menangani masalah Anda.
+						</p>
+					</div>
+					<div class="why-card reveal">
+						<div class="why-icon">🏠</div>
+						<div class="why-title">Service Di Tempat</div>
+						<p class="why-desc">
+							Kami datang langsung ke rumah Anda. Tidak perlu repot membawa
+							perangkat ke bengkel.
+						</p>
+					</div>
+					<div class="why-card reveal">
+						<div class="why-icon">🛡️</div>
+						<div class="why-title">Bergaransi</div>
+						<p class="why-desc">
+							Setiap pekerjaan servis kami berikan garansi untuk ketenangan
+							pikiran Anda.
+						</p>
+					</div>
+					<div class="why-card reveal">
+						<div class="why-icon">🔧</div>
+						<div class="why-title">Teknisi Berpengalaman</div>
+						<p class="why-desc">
+							Dikerjakan oleh teknisi berpengalaman dan terlatih di bidang
+							elektronik & kompor gas.
+						</p>
+					</div>
+					<div class="why-card reveal">
+						<div class="why-icon">🚐</div>
+						<div class="why-title">Siap Antar Jemput</div>
+						<p class="why-desc">
+							Layanan antar jemput perangkat tersedia. Hubungi kami untuk
+							informasi lebih lanjut.
+						</p>
+					</div>
+					<div class="why-card reveal">
+						<div class="why-icon">💰</div>
+						<div class="why-title">Harga Terjangkau</div>
+						<p class="why-desc">
+							Biaya servis yang jujur dan transparan, sesuai dengan kualitas
+							pengerjaan terbaik.
+						</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<div class="divider"></div>
+
+		<!-- CONTACT -->
+		<section id="kontak" class="contact-bg">
+			<div class="section-inner">
+				<span class="section-tag reveal">✦ Hubungi Kami</span>
+				<h2 class="section-title reveal">Kontak &<br />Lokasi</h2>
+				<div class="contact-grid">
+					<div class="contact-info reveal">
+						<div class="contact-item">
+							<div class="contact-ico">📱</div>
+							<div>
+								<div class="contact-label">WhatsApp / Telepon</div>
+								<div class="contact-value">
+									<a href="tel:+6281997901492">081 997 901 492</a>
+								</div>
+							</div>
+						</div>
+						<div class="contact-item">
+							<div class="contact-ico">📘</div>
+							<div>
+								<div class="contact-label">Facebook</div>
+								<div class="contact-value">
+									<a href="https://facebook.com/NoviyanHadi" target="_blank"
+										>Noviyan Hadi</a
+									>
+								</div>
+							</div>
+						</div>
+						<div class="contact-item">
+							<div class="contact-ico">📍</div>
+							<div>
+								<div class="contact-label">Alamat</div>
+								<div class="contact-value">Desa Tengeh, Bendungan Sepit</div>
+							</div>
+						</div>
+						<div class="contact-item">
+							<div class="contact-ico">🕐</div>
+							<div>
+								<div class="contact-label">Jam Operasional</div>
+								<div class="contact-value">Setiap Hari • Siap Melayani</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="wa-box reveal">
+						<h3>Butuh Servis Sekarang?</h3>
+						<p>
+							Hubungi kami lewat WhatsApp untuk konsultasi gratis dan penanganan
+							segera di tempat Anda! 🙏🏻
+						</p>
+						<span class="wa-number">081 997 901 492</span>
+						<a
+							class="btn btn-primary"
+							style="width: 100%; justify-content: center; font-size: 1.05rem"
+							href="https://wa.me/6281997901492?text=Halo%20Novi%20Servis%2C%20saya%20ingin%20servis%20perangkat%20saya."
+							target="_blank"
+						>
+							💬 Chat WhatsApp Sekarang
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- FOOTER -->
+		<footer>
+			<div class="footer-brand">🔥 NOVI SERVIS</div>
+			<p class="footer-copy">
+				Teknik Kompor Gas &amp; Elektronik • Desa Tengeh, Bendungan Sepit<br />
+				Siap Antar Jemput • Service Di Tempat • Bergaransi
+			</p>
+		</footer>
+
+		<!-- Floating WhatsApp -->
+		<a
+			class="wa-float"
+			href="https://wa.me/6281997901492"
+			target="_blank"
+			title="Chat WhatsApp"
+		>
+			📲
+		</a>
+
+		<!-- SCROLL REVEAL JS -->
+		<script>
+			const reveals = document.querySelectorAll('.reveal')
+			const observer = new IntersectionObserver(
+				entries => {
+					entries.forEach((e, i) => {
+						if (e.isIntersecting) {
+							setTimeout(() => e.target.classList.add('visible'), i * 60)
+							observer.unobserve(e.target)
+						}
+					})
+				},
+				{threshold: 0.12},
+			)
+			reveals.forEach(el => observer.observe(el))
+		</script>
+	</body>
 </html>
